@@ -1,0 +1,74 @@
+//Read the current directory and display the name of the files, no of files in current directory
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+
+int main(void) {
+    DIR *d;
+    struct dirent *dir;
+    d = opendir(".");
+    int count = 0;
+
+    if (d) {
+        printf("Files in the current directory:\n");
+        while ((dir = readdir(d)) != NULL) {
+        
+            if (dir->d_name[0] == '.') {
+                continue;
+            }
+            
+            printf("%s\n", dir->d_name);
+            count++;
+        }
+
+        printf("\nTotal number of files: %d\n", count);
+
+        closedir(d);
+    } else {
+        printf("Failed to open the current directory.\n");
+        return 1;
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+
+/*Q2 Write a C program to create an unnamed pipe. The child process will write following three
+messages to pipe and parent process display it.
+Message1 = “Hello World”
+Message2 = “Hello SPPU”
+Message3 = “Linux is Funny”*/
+
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#define MSGSIZE 16
+
+char *msg1 = "Hello World";
+char *msg2 = "Hello SPPU";
+char *msg3 = "LINUX IS FUNNY";
+int main()
+{
+	int fd[2],i;
+	char buff[MSGSIZE];
+	
+	if(pipe(fd)<0)
+		exit(1);
+	
+	write(fd[1],msg1,MSGSIZE);
+	write(fd[1],msg2,MSGSIZE);
+	write(fd[1],msg3,MSGSIZE);
+	
+	for(i=0;i<3;i++)
+	{
+		read(fd[0],buff,MSGSIZE);
+		printf("\n%s",buff);
+	}
+	return 0;
+}

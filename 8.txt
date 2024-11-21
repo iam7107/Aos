@@ -1,0 +1,67 @@
+/* Write a C program that redirects standard output to a file output.txt. (use of dup and 
+open system call)*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+int main(void) {
+    int number1, number2, sum;
+    int output_fds;
+
+    output_fds = open("output.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (output_fds < 0) {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+
+    if (dup2(output_fds, STDOUT_FILENO) < 0) {
+        perror("dup2");
+        close(output_fds);
+        exit(EXIT_FAILURE);
+    }
+
+    close(output_fds);
+
+    printf("Enter two numbers: ");
+    scanf("%d %d", &number1, &number2);
+    sum = number1 + number2;
+    printf("%d + %d = %d\n", number1, number2, sum);
+
+    return EXIT_SUCCESS;
+}
+
+/* OUTPUT 
+cc 12-redirect-output.c 
+ ./a.out 
+
+ls
+
+
+
+
+
+
+/*Q2Implement the following unix/linux command (use fork, pipe and exec system call)
+ls –l | wc –l.*/
+
+#include<stdio.h>
+#include<unistd.h>
+int main()
+{
+	int fd[2],dupfd;
+	char *filename1="ls";
+	char *filename2="wc";
+	char *arg1 ="-l";
+	pipe(fd);
+	if(!fork())
+	{
+		close(10);
+		dup(fd[1]);
+		close(fd[0]);
+		execlp(filename1,filename1,arg1,NULL);
+	}
+	else
+	printf("error\n\n");
+}

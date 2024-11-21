@@ -1,0 +1,90 @@
+// Q1 Write a C program that illustrates suspending and resuming processes using signals.
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<signal.h>
+
+void childProcess() {
+    while (1) {
+        printf("Child process is running...\n");
+        sleep(1);
+    }
+}
+
+int main() {
+    pid_t child_pid;
+
+    child_pid = fork();
+
+    if (child_pid < 0) {
+        perror("Fork Failed");
+        exit(1);
+    }
+
+    if (child_pid == 0) {
+        
+        childProcess();
+    } else {
+
+        printf("Parent created child process with PID: %d\n", child_pid);
+
+        sleep(2);
+
+        printf("Suspending the child process...\n");
+        kill(child_pid, SIGSTOP);
+
+        sleep(2);
+
+        printf("Resuming the child process...\n");
+        kill(child_pid, SIGCONT);
+
+        sleep(2);
+
+        printf("Terminating the child process...\n");
+        kill(child_pid, SIGTERM);
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+//Q2 Write a c program that a string as an argument and return all the files that beginsnwith the namein the current directory.For example: ./a.out foo will return all file names that begins with foo
+
+#include<stdio.h>
+#include<dirent.h>
+#include<string.h>
+int main(int argc,char *argv[])
+{
+	struct dirent *de; 
+	
+	if (argc != 2)
+	{
+		printf("Usage: %s <prefix>\n",argv[0]);
+		return 1;
+	}
+	char *prefix = argv[1];
+	DIR *dr = opendir(".");
+	if(dr == NULL)
+	{
+		printf("Could not open current directory");
+		return 1;
+	}
+	
+	
+	while((de = readdir(dr)) != NULL)
+	{
+		if(strncmp(de->d_name,prefix,strlen(prefix)) == 0)	
+		{
+			printf("%s\n",de->d_name);
+		}
+	}
+	closedir(dr);
+	return 0;
+}
+
+

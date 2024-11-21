@@ -1,0 +1,94 @@
+// Q1 Display all files from current directory which are created in particular month
+
+#include"stdio.h"
+#include"stdlib.h"
+#include"fcntl.h"
+#include"unistd.h"
+#include"sys/stat.h"
+#include"sys/types.h"
+#include"time.h"
+#include"string.h"
+#include"dirent.h"
+
+int main(int argc,char* argv[])
+{
+	char *t;
+	char m[10];
+	struct stat s;
+	DIR *d;
+	struct dirent *de;
+	printf("Enter month=> ");
+	scanf("%s",m);
+	d = opendir(".");
+	while((de=readdir(d)) != NULL)
+	{
+		stat(de->d_name,&s);
+		t = ctime(&s.st_ctime);
+		if(strcasestr(t,m) != NULL)
+			printf("%s\n",de->d_name);
+	}
+	return 0;
+}
+
+
+
+
+
+
+
+/*Q2  Write a C program which create a child process which catch a signal sighup, sigint and sigquit. 
+The Parent process send a sighup or sigint signal after every 3 seconds, at the end of 30 second parent 
+send sigquit signal to child and child terminates my displaying message My DADDY has Killed me!!*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/wait.h>  // Needed for wait()
+
+// Child process signal handler
+void childSignalHandler(int signum) {
+    if (signum == SIGHUP) {
+        printf("Child: Received SIGHUP signal.\n");
+    } else if (signum == SIGINT) {
+        printf("Child: Received SIGINT signal.\n");
+    } else if (signum == SIGQUIT) {
+        printf("Child: My DADDY has Killed me!\n");
+        exit(0);  
+    }
+}
+
+int main() {
+    int i =1;
+    pid_t child_pid;
+    child_pid = fork();
+
+    if (child_pid == -1) {
+        perror("Fork failed");
+        exit(1);
+    } else if (child_pid == 0) {
+        signal(SIGHUP, childSignalHandler);
+        signal(SIGINT, childSignalHandler);
+        signal(SIGQUIT, childSignalHandler);
+
+        
+        while (1) {
+            sleep(1);
+        }
+    } else {
+       
+        for (i = 1; i <= 30; i++) {
+            if (i % 3 == 0) {
+                kill(child_pid, (i <= 9) ? SIGHUP : SIGINT);
+            }
+            sleep(1); 
+        }
+
+       
+        kill(child_pid, SIGQUIT);
+        wait(NULL); 
+        printf("Parent: Have fun my child..!!\n");
+    }
+
+    return 0;
+}

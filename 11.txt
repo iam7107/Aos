@@ -1,0 +1,64 @@
+//Q1Write a c program to get and set the resource limits such as files,memory associated with a process.
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/time.h>
+#include<sys/resource.h>
+int main()
+{
+	struct rlimit limit;
+	if(getrlimit(RLIMIT_NPROC,&limit)<0)
+		printf("getrlimit error\n");
+	printf("NO. of extant process = [%10ld][%10ld]\n",limit.rlim_max,limit.rlim_cur);
+	
+	if(getrlimit(RLIMIT_CPU,&limit)<0)
+		printf("getrlimit error\n");
+	printf("limit an amount of CPU time that process can cinsume = [%ld][%ld]\n",limit.rlim_max,limit.rlim_cur);
+
+	if(getrlimit(RLIMIT_DATA,&limit)<0)
+		printf("getrlimit error\n");
+	printf("max.size of process's data segment = [%ld][%ld]\n",limit.rlim_max,limit.rlim_cur);
+
+	if(getrlimit(RLIMIT_FSIZE,&limit)<0)
+		printf("getrlimit error\n");
+	printf("max.size in bytes of files that process may create = [%ld][%ld]\n",limit.rlim_max,limit.rlim_cur);
+
+	if(getrlimit(RLIMIT_LOCKS,&limit)<0)
+		printf("getrlimit error\n");
+	printf("Limit on locks = [%ld][%ld]\n",limit.rlim_max,limit.rlim_cur);
+
+	if(getrlimit(RLIMIT_MEMLOCK,&limit)<0)
+		printf("getrlimit error\n");
+	printf("max no. of bytes of memory that can be locked in RAM = [%ld][%ld]\n",limit.rlim_max,limit.rlim_cur);
+
+	if(getrlimit(RLIMIT_MSGQUEUE,&limit)<0)
+		printf("getrlimit error\n");
+	printf("max queue = [%ld][%ld]\n",limit.rlim_max,limit.rlim_cur);
+	
+	return 0;
+}
+
+
+
+
+// Q2 Write a c program that redirects standard output to a file output.txt(Use of dup and open system call)
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
+
+int main(void)
+{
+	int n1,n2,sum;
+	int input_fds = open("./input.txt",O_RDONLY);
+	if(dup2(input_fds,STDIN_FILENO) < 0)
+	{
+		printf("Unable to duplicate file descriptor");
+		exit(EXIT_FAILURE);
+	}
+	scanf("%d%d",&n1,&n2);
+	sum = n1 + n2;
+	printf("%d + %d = %d\n",n1,n2,sum);
+	return EXIT_SUCCESS;
+}

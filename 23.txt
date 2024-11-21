@@ -1,0 +1,57 @@
+//Q1 Write a c program to find whether a given file is present in current directory or not
+
+#include <stdio.h>
+
+int main() {
+    char filename[100];
+    FILE *file;
+
+    printf("Enter the file name: ");
+    scanf("%s", filename);
+
+    file = fopen(filename, "r");
+
+    if (file != NULL) {
+        printf("File '%s' is present in the current directory.\n", filename);
+        fclose(file); 
+    } else {
+        printf("File '%s' is not present in the current directory.\n", filename);
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+
+/*Q2 Write a C program to Identify the type (Directory, character device, Block device, Regular file,
+FIFO or pipe, symbolic link or socket) of given file using stat() system call.*/
+
+#include<stdio.h>
+#include<string.h>
+#include<fcntl.h>
+#include<sys/stat.h>
+#include<sys/types.h>
+#include<unistd.h>
+
+int main()
+{
+	int fd;
+	char  *myfifo = "/tmp/myfifo"; 
+	mkfifo(myfifo,0666);    
+	char arr1[80],arr2[80];
+	while(1);
+	{
+		fd = open(myfifo,O_WRONLY);
+		
+		fgets(arr2,80,stdin);
+		
+		write(fd,arr2,strlen(arr2)+1);
+		close(fd);
+
+		fd = open(myfifo,O_RDONLY)
+	}
+} 

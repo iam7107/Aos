@@ -1,0 +1,75 @@
+// Q1 Display name of files and no of files in the current directory
+
+#include<stdio.h>
+#include<dirent.h>
+int main(void)
+{
+	DIR *d;
+	struct dirent *dir;
+	d = opendir(".");
+	int count = 0;
+	if(d)
+	{
+		while((dir = readdir(d)) != NULL)
+		{
+			count++;			
+			printf("%s\n",dir->d_name);
+		}
+		printf("%d\n",count);
+		closedir(d);
+	}
+	return 0;
+}
+
+
+
+
+
+// Q2 Write a program which receives filename as command line argument and display filenames in ascending order according to their sizes
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<sys/stat.h>
+#include<time.h>
+#include<pwd.h>
+#include<grp.h>
+#include<dirent.h>
+#include<unistd.h>
+
+struct fileinfo
+{
+	char filename[20];
+	int size;
+}files[20],temp;
+
+
+int main(int argc,char *argv[])
+{
+	struct stat s;
+	memset(&s,0,sizeof(s));
+	int i,j,n;
+	for(i=1;i<argc;i++)
+	{
+		printf("\n");
+		stat(argv[i],&s);
+		strcpy(files[i-1].fileName,argv[i]);
+		files[i-1].size = s.st_size;
+	}
+	n = i-1;
+	for(i=0;i<n;i++)
+	{
+		for(j=i+1;j<n;j++)
+		{
+			if(files[i].size > files[j].size)
+			{
+				temp=files[i];
+				files[i] = files[j];
+				files[j] = temp;
+			}
+		}
+	}
+	for(i=0;i<n;i++)
+		printf("\n%s\t%d",files[i].fileName,files[i],size);
+	return 0;
+}

@@ -1,0 +1,88 @@
+// Q1 Display all files from current directory which are created in particular month
+
+#include"stdio.h"
+#include"stdlib.h"
+#include"fcntl.h"
+#include"unistd.h"
+#include"sys/stat.h"
+#include"sys/types.h"
+#include"time.h"
+#include"string.h"
+#include"dirent.h"
+
+int main(int argc,char* argv[])
+{
+	char *t;
+	char m[10];
+	struct stat s;
+	DIR *d;
+	struct dirent *de;
+	printf("Enter month=> ");
+	scanf("%s",m);
+	d = opendir(".");
+	while((de=readdir(d)) != NULL)
+	{
+		stat(de->d_name,&s);
+		t = ctime(&s.st_ctime);
+		if(strcasestr(t,m) != NULL)
+			printf("%s\n",de->d_name);
+	}
+	return 0;
+}
+
+
+
+
+
+/*Q2 Write a C program to create n child processes. When all n child processes terminates, Display
+total cumulative time children spent in user and kernel mode*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/resource.h>
+
+#define NUM_CHILDREN 5
+
+int main() {
+    int child_count = 0;
+    struct rusage usage;
+    struct timeval user_time, kernal_time;
+    double total_kernal_time = 0.0;
+    double total_user_time = 0.0;
+
+    for (int i = 0; i < NUM_CHILDREN; i++) {
+        pid_t child_pid = fork();
+        if (child_pid == -1) {
+            perror("fork failed");
+            exit(EXIT_FAILURE);
+        }
+
+        if (child_pid == 0) {
+            
+            sleep(1);
+            exit(EXIT_SUCCESS);
+        } else {
+            
+            child_count++;
+            
+            int status;
+            wait(&status);
+
+            
+            if (getrusage(RUSAGE_CHILDREN, &usage) != -1) {
+                user_time = usage.ru_utime;
+                kernal_time = usage.ru_stime;
+
+                total_user_time += user_time.tv_sec + user_time.tv_usec / 1e6;
+                total_kernal_time += kernal_time.tv_sec + kernal_time.tv_usec / 1e6;
+            }
+        }
+    }
+
+    printf("Total cumulative user time of %d child processes: %.6f seconds\n", child_count, total_user_time);
+    printf("Total cumulative kernel time of %d child processes: %.6f seconds\n", child_count, total_kernal_time);
+
+    return 0;
+}
